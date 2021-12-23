@@ -12,6 +12,7 @@ export const Container = styled.View<ContainerProps>`
   align-items: center;
   justify-content: ${({ showLogoutButton }) =>
     showLogoutButton ? 'space-around' : 'center'};
+  position: relative;
 `
 
 export const Title = styled.Text`

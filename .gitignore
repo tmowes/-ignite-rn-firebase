@@ -56,3 +56,4 @@ dist/
 
 ## Firebase env configs
 google-services.json
+GoogleService-Info.plist

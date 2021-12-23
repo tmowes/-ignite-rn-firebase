@@ -53,7 +53,7 @@ export default function Receipts() {
             path: file.fullPath,
           })
         })
-        setPhotos(files)
+        setPhotos(files.sort((a, b) => b.name.localeCompare(a.name)))
       })
   }
 

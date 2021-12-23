@@ -6,7 +6,7 @@ import { Container } from './styles'
 export default function Products() {
   return (
     <Container>
-      <Header title="Lista de compras" />
+      <Header title="Lista de compras" showLogoutButton />
       <FormBox />
       <ShoppingList />
     </Container>
