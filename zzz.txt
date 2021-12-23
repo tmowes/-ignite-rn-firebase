@@ -1,0 +1,178 @@
+
+################################################################################
+### GRAVAR DOC ###
+const handleAddProduct = async () => {
+  firestore()
+    .collection('products')
+    .add({
+      description,
+      quantity,
+      done: false,
+      createdAt: firestore.FieldValue.serverTimestamp(),
+    })
+    .then(() => Alert.alert('Produto adicionado com sucesso!'))
+    .catch((err) => console.error(err))
+    .finally(() => {
+      setDescription('')
+      setQuantity(0)
+    })
+}
+
+################################################################################
+### GRAVAR DOC COM ID PERSONALIZADO ###
+const handleAddProduct = async () => {
+  firestore()
+    .collection('products')
+    .doc('custom_id')
+    .set({
+      description,
+      quantity,
+      done: false,
+      createdAt: firestore.FieldValue.serverTimestamp(),
+    })
+    .then(() => Alert.alert('Produto adicionado com sucesso!'))
+    .catch((err) => console.error(err))
+    .finally(() => {
+      setDescription('')
+      setQuantity(0)
+    })
+}
+
+################################################################################
+### CARREGAR LISTA DE DOCS COM ID ###
+const loadProducts = async () => {
+  firestore()
+    .collection('products')
+    .get()
+    .then((res) => {
+      const data = res.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      })) as ProductDataProps[]
+      setProducts(data)
+    })
+    .catch((err) => console.error(err))
+}
+
+################################################################################
+### CARREGAR DOC COM ID ###
+const loadProductById = async (id: string) => {
+  firestore()
+    .collection('products')
+    .doc(id)
+    .get()
+    .then((doc) => {
+      const data = {
+        id: doc.id,
+        ...doc.data(),
+      } as ProductDataProps
+      setProduct(data)
+    })
+    .catch((err) => console.error(err))
+}
+
+################################################################################
+### CARREGAR LISTA DE DOCS EM REALTIME ###
+useEffect(() => {
+  const subscribe = firestore()
+    .collection('products')
+    .onSnapshot((query) => {
+      const data = query.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      })) as ProductDataProps[]
+      setProducts(data)
+    })
+  return () => subscribe()
+}, [])
+
+
+################################################################################
+### CARREGAR LISTA DE DOCS EM REALTIME COM FILTRO ###
+useEffect(() => {
+  const subscribe = firestore()
+    .collection('products')
+    .where('quantity', '!=', 22)
+    .onSnapshot((query) => {
+      const data = query.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      })) as ProductDataProps[]
+      setProducts(data)
+    })
+  return () => subscribe()
+}, [])
+
+
+################################################################################
+### CARREGAR LISTA DE DOCS EM REALTIME COM LIMITE PARA PAGINAÇÂO ###
+useEffect(() => {
+  const subscribe = firestore()
+    .collection('products')
+    .limit(3)
+    .onSnapshot((query) => {
+      const data = query.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      })) as ProductDataProps[]
+      setProducts(data)
+    })
+  return () => subscribe()
+}, [])
+
+
+################################################################################
+### CARREGAR LISTA DE DOCS EM REALTIME ORDENADOS ###
+useEffect(() => {
+  const subscribe = firestore()
+    .collection('products')
+    .orderBy('quantity', 'asc')
+    .onSnapshot((query) => {
+      const data = query.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      })) as ProductDataProps[]
+      setProducts(data)
+    })
+  return () => subscribe()
+}, [])
+
+
+################################################################################
+### UPLOAD IMAGENS PARA FIREBASE STORAGE ###
+const uploadImage = async () => {
+  const fileName = new Date().getTime()
+  const reference = storage().ref(`/images/${fileName}.png`)
+  reference
+    .putFile(image)
+    .then(() => Alert.alert('Upload concluido!'))
+    .catch((err) => console.error(err))
+    .finally(() => {
+      setImage('')
+    })
+}
+
+################################################################################
+### UPLOAD IMAGENS PARA FIREBASE STORAGE COM PROGRESS ###
+const uploadImage = async () => {
+  const fileName = new Date().getTime()
+  const reference = storage().ref(`/images/${fileName}.png`)
+  const uploadTask = reference.putFile(image)
+  uploadTask.on('state_changed', (task) => {
+    const percent = Math.round((task.bytesTransferred / task.totalBytes) * 100)
+    setProgress(percent)
+    setTransferredBytes(
+      `${bytesToKBytes(task.bytesTransferred)}kB de ${bytesToKBytes(
+        task.totalBytes,
+      )}kB transferidos`,
+    )
+  })
+  uploadTask
+    .then(() => Alert.alert('Upload concluido!'))
+    .catch((err) => console.error(err))
+    .finally(() => {
+      setTransferredBytes('')
+      setImage('')
+      setProgress(0)
+    })
+}
